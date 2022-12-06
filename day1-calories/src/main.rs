@@ -7,12 +7,15 @@ use std::fs;
 use std::error::Error;
 
 mod calorie_counting {
-    pub fn load(input: &str, elfs: &mut Vec::<u32>) {
+    pub fn load(input: &str, elfs: &mut Vec::<u32>) -> u32 {
         let mut itr = input.lines();
         let mut sum = 0;
+        let mut max_sum = 0;
         while let Some(line) = itr.next() {
             if let true = line.is_empty() {
                 elfs.push(sum);
+                // task speed up
+                if sum > max_sum { max_sum = sum }
                 sum = 0;
                 continue;
             };
@@ -22,7 +25,9 @@ mod calorie_counting {
         // Hack - push last elf
         if sum > 0 {
             elfs.push(sum);
+            if sum > max_sum { max_sum = sum }
         }
+        max_sum
     }
 
     pub fn find_max_innefficent(elfs: &Vec::<u32>) -> u32 {
@@ -44,7 +49,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut elfs = Vec::<u32>::new();
 
     let file = fs::read_to_string("input.txt")?;
-    calorie_counting::load(&file, &mut elfs);
+    println!("Optimization - Max: {}", calorie_counting::load(&file, &mut elfs));
+
+    // Not necessery
     calorie_counting::find_max_innefficent(&elfs);
 
     Ok(())
@@ -66,12 +73,17 @@ mod tests {
 2000
 3000
 
-10000";
+10000
+
+2000";
         let mut elfs = Vec::<u32>::new();
 
-        calorie_counting::load(input, &mut elfs);
         assert_eq!(
-            vec![5000, 10000],
+            10000,
+            calorie_counting::load(input, &mut elfs),
+        );
+        assert_eq!(
+            vec![5000, 10000, 2000],
             elfs
         );
     }
