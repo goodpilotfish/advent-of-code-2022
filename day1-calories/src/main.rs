@@ -1,7 +1,9 @@
 // TODO - REFACTOR
 // Break out file load - DONE
+// - Opt: max size is calculated during loading for first results DONE
+// - Create functional versions DONE
 // Find a better data structure
-
+// - Vec can be replaced with BinaryHeap 1to1. If find_max is called often (peek)
 
 use std::fs;
 use std::error::Error;
@@ -45,14 +47,35 @@ mod calorie_counting {
     }
 }
 
+mod functional {
+    pub fn find_max(input: &str) -> u32 {
+        input
+            .split("\n\n")
+            .map(|elf| {
+                elf.lines()
+                    .filter_map(|s| s.parse::<u32>().ok())
+                    .sum::<u32>()
+            })
+            .max()
+            .unwrap()
+    }
+    
+    #[allow(dead_code)]
+    pub fn find_max_fold(elfs: &Vec::<u32>) -> u32 {
+        elfs.iter().fold(0, |max, x| {
+            if x > &max { return *x; } 
+            max
+        })
+    }
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let mut elfs = Vec::<u32>::new();
 
     let file = fs::read_to_string("input.txt")?;
     println!("Optimization - Max: {}", calorie_counting::load(&file, &mut elfs));
 
-    // Not necessery
-    calorie_counting::find_max_innefficent(&elfs);
+    println!("Max: {}", elfs.iter().max().unwrap());
 
     Ok(())
 }
@@ -85,6 +108,32 @@ mod tests {
         assert_eq!(
             vec![5000, 10000, 2000],
             elfs
+        );
+    }
+}
+
+#[cfg(test)]
+mod tests_functional {
+    use super::*;
+
+    #[test]
+    fn find_fold() {
+        let elfs = vec![1, 2, 4, 3];
+        assert_eq!(4, functional::find_max_fold(&elfs));
+    }
+
+    #[test]
+    fn load() {
+        let input = "\
+2000
+3000
+
+10000
+
+2000";
+        assert_eq!(
+            10000,
+            functional::find_max(input),
         );
     }
 }
