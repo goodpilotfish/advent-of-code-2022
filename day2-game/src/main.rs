@@ -58,32 +58,22 @@ mod game {
         }
     }
 
-    pub fn run(input: &str) -> u32 {
+    pub fn run(input: &str, f: fn(char, char) -> u32) -> u32 {
         input
             .lines()
             .fold(0, |acc, line| {
                 let you = line.chars().nth(0).unwrap();
                 let me = line.chars().nth(2).unwrap();
-                acc + get_score(you, me)
-            })
-    }
-
-    pub fn run2(input: &str) -> u32 {
-        input
-            .lines()
-            .fold(0, |acc, line| {
-                let you = line.chars().nth(0).unwrap();
-                let me = line.chars().nth(2).unwrap();
-                acc + get_score_part2(you, me)
+                acc + f(you, me)
             })
     }
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
     let file = fs::read_to_string("input.txt")?;
-    println!("Total Score - Part 1: {}", game::run(&file));
+    println!("Total Score - Part 1: {}", game::run(&file, game::get_score));
 
-    println!("Total Score - Part 2: {}", game::run2(&file));
+    println!("Total Score - Part 2: {}", game::run(&file, game::get_score_part2));
     Ok(())
 }
 
@@ -111,6 +101,7 @@ mod test {
 A Y
 B X
 C Z";
-        assert_eq!(15, game::run(&input));
+        assert_eq!(15, game::run(&input, game::get_score));
+        assert_eq!(12, game::run(&input, game::get_score_part2));
     }
 }
