@@ -33,17 +33,16 @@ mod calorie_counting {
     }
 
     pub fn find_max_innefficent(elfs: &Vec::<u32>) -> u32 {
-        let mut max = 0;
-        let mut elf_index = 0;
-        for (i, elf) in elfs.iter().enumerate() {
-            if elf > &max {
-                max = *elf;
-                elf_index = i;
-            }
-            //println!("Calories: {}, Index: {}", elf, i);
-        }
-        println!("Most calories: {}, By elf: {}", max, elf_index);
-        max 
+        elfs.iter().fold(0, |max, x| {
+            if x > &max { return *x; } 
+            max
+        })
+    }
+
+    pub fn top_tree_sum(elfs: &mut Vec::<u32>) -> u32 {
+        elfs.sort();
+
+        elfs[elfs.len()-1] + elfs[elfs.len()-2] + elfs[elfs.len()-3]
     }
 }
 
@@ -59,13 +58,20 @@ mod functional {
             .max()
             .unwrap()
     }
-    
-    #[allow(dead_code)]
-    pub fn find_max_fold(elfs: &Vec::<u32>) -> u32 {
-        elfs.iter().fold(0, |max, x| {
-            if x > &max { return *x; } 
-            max
-        })
+
+    use itertools::Itertools;
+    pub fn top_three_sum(input: &str) -> u32 {
+        input
+            .split("\n\n")
+            .map(|elf| {
+                elf.lines()
+                    .filter_map(|s| s.parse::<u32>().ok())
+                    .sum::<u32>()
+            })
+            .sorted()
+            .rev()
+            .take(3)
+            .sum::<u32>()
     }
 }
 
@@ -75,7 +81,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     let file = fs::read_to_string("input.txt")?;
     println!("Optimization - Max: {}", calorie_counting::load(&file, &mut elfs));
 
+    // Part 1
     println!("Max: {}", elfs.iter().max().unwrap());
+
+    // Part 2
+    println!("{}", calorie_counting::top_tree_sum(&mut elfs));
 
     Ok(())
 }
@@ -88,6 +98,12 @@ mod tests {
     fn simple_innefficent() {
         let elfs = vec![1, 2, 4, 3];
         assert_eq!(4, calorie_counting::find_max_innefficent(&elfs));
+    }
+
+    #[test]
+    fn simple_top_tree_sum() {
+        let mut elfs = vec![1, 2, 4, 3];
+        assert_eq!(9, calorie_counting::top_tree_sum(&mut elfs));
     }
 
     #[test]
@@ -117,9 +133,15 @@ mod tests_functional {
     use super::*;
 
     #[test]
-    fn find_fold() {
-        let elfs = vec![1, 2, 4, 3];
-        assert_eq!(4, functional::find_max_fold(&elfs));
+    fn top_tree_sum() {
+        let input = "\
+2000
+3000
+
+10000
+
+2000";
+        assert_eq!(17000, functional::top_three_sum(input));
     }
 
     #[test]
