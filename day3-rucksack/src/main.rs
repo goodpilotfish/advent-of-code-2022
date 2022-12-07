@@ -16,17 +16,15 @@ mod task {
     }
 
     pub fn find_match(s: &str) -> char {
-        let first = &s[..s.len()/2];
-        let second = &s[s.len()/2..s.len()];
-        println!("{}, {}", first, second);
+        let (first, second) = s.split_at(s.len()/2);
+        //println!("{}, {}", first, second);
 
-        // TODO make efficent. any is n*n
+        // TODO make efficent. 
         let mut res = 'a';
-        first.chars().any(|c| if second.contains(c) {
+        first
+          .chars()
+          .for_each(|c| if second.contains(c) {
             res = c;
-            true
-        } else {
-            false
         });
         res
     }
@@ -40,8 +38,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         .fold(0, |acc, line| {
             let common = task::find_match(line);
             let prio = task::find_prio(common);
-            println!("Match: {}", common);
-            println!("Prio: {}", prio);
             acc + prio
         });
     println!("Total: {}", res);
