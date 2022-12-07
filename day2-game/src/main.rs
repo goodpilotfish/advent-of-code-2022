@@ -33,24 +33,57 @@ mod game {
             _ => unreachable!(),
         }
     }
+
+    pub fn get_score_part2(you: char, outcome: char) -> u32 {
+        match you {
+            'A' => match outcome { // ROCK
+                'X' => LOSS + SCISSOR,
+                'Y' => DRAW + ROCK,
+                'Z' => WIN + PAPER,
+                _ => unreachable!(),
+            },
+            'B' => match outcome { // PAPER
+                'X' => LOSS + ROCK,
+                'Y' => DRAW + PAPER,
+                'Z' => WIN + SCISSOR,
+                _ => unreachable!(),
+            },
+            'C' => match outcome { // SCISSOR
+                'X' => LOSS + PAPER,
+                'Y' => DRAW + SCISSOR,
+                'Z' => WIN + ROCK,
+                _ => unreachable!(),
+            },
+            _ => unreachable!(),
+        }
+    }
+
     pub fn run(input: &str) -> u32 {
-        let mut sum = 0;
         input
             .lines()
-            .for_each(|l| {
-                let you = l.chars().nth(0).unwrap();
-                let me = l.chars().nth(2).unwrap();
-                //println!("{}, {}", you, me);
-                sum += get_score(you, me)
-            });
-        sum
+            .fold(0, |acc, line| {
+                let you = line.chars().nth(0).unwrap();
+                let me = line.chars().nth(2).unwrap();
+                acc + get_score(you, me)
+            })
+    }
+
+    pub fn run2(input: &str) -> u32 {
+        input
+            .lines()
+            .fold(0, |acc, line| {
+                let you = line.chars().nth(0).unwrap();
+                let me = line.chars().nth(2).unwrap();
+                acc + get_score_part2(you, me)
+            })
     }
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
     let file = fs::read_to_string("input.txt")?;
+    println!("Total Score - Part 1: {}", game::run(&file));
 
-    println!("Total Score: {}", game::run(&file));
+    println!("Total Score - Part 2: {}", game::run2(&file));
     Ok(())
 }
 
@@ -63,6 +96,13 @@ mod test {
         assert_eq!(8, game::get_score('A', 'Y'));
         assert_eq!(1, game::get_score('B', 'X'));
         assert_eq!(6, game::get_score('C', 'Z'));
+    }
+
+    #[test]
+    fn get_score_part2() {
+        assert_eq!(4, game::get_score_part2('A', 'Y'));
+        assert_eq!(1, game::get_score_part2('B', 'X'));
+        assert_eq!(7, game::get_score_part2('C', 'Z'));
     }
 
     #[test]
