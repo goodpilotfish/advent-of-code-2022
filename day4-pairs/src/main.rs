@@ -8,7 +8,7 @@ mod task {
     use std::collections::HashSet;
     const IS_PART1: bool = true;
 
-    pub fn is_subset(x: &Vec<u32>, y: &Vec<u32>) -> bool {
+    pub fn is_match(x: &Vec<u32>, y: &Vec<u32>) -> bool {
         let a: HashSet<&u32> = HashSet::from_iter(x.iter());
         let b: HashSet<&u32> = HashSet::from_iter(y.iter());
 
@@ -42,14 +42,14 @@ mod task {
                 let v1: Vec<u32> = (aa..=bb).collect();
                 let v2: Vec<u32> = (cc..=dd).collect();
 
-                acc + if is_subset(&v1, &v2) { 1 } else { 0 }
+                acc + if is_match(&v1, &v2) { 1 } else { 0 }
             })
     }
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
     let file = fs::read_to_string("input.txt")?;
-    println!("Nbr of subsets: {}", task::run(&file));
+    println!("Nbr of matches: {}", task::run(&file));
     Ok(())
 }
 
@@ -61,21 +61,21 @@ mod tests {
     fn no_subset() {
         let x = vec![2, 3, 4];
         let y = vec![6, 7, 8];
-        assert_eq!(false, task::is_subset(&x, &y));
+        assert_eq!(false, task::is_match(&x, &y));
     }
 
     #[test]
     fn full_subset() {
         let x = vec![6];
         let y = vec![4, 5, 6];
-        assert_eq!(true, task::is_subset(&x, &y));
+        assert_eq!(true, task::is_match(&x, &y));
     }
 
     #[test]
     fn partial_subset() {
         let x = vec![5, 6, 7];
         let y = vec![7, 8, 9];
-        assert_eq!(false, task::is_subset(&x, &y));
+        assert_eq!(false, task::is_match(&x, &y));
     }
 
     #[test]
