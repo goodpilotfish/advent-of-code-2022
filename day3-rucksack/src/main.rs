@@ -7,8 +7,8 @@ use std::error::Error;
 mod task {
     use std::collections::HashSet;
 
-    const OFFSET_LOWER: u32 = 96;
-    const OFFSET_UPPER: u32 = 38;
+    const OFFSET_LOWER: u32 = 96; // 'a' as u32 - 1
+    const OFFSET_UPPER: u32 = 38; // 'A' as u32 - 27
 
     pub fn find_prio(c: char) -> u32 {
         if c.is_lowercase() {
