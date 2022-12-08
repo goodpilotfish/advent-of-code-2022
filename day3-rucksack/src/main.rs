@@ -1,7 +1,12 @@
+// TODO - REFACTOR
+// Replace n*n match wtih Hashset DONE
+
 use std::fs;
 use std::error::Error;
 
 mod task {
+    use std::collections::HashSet;
+
     const OFFSET_LOWER: u32 = 96;
     const OFFSET_UPPER: u32 = 38;
 
@@ -19,14 +24,13 @@ mod task {
         let (first, second) = s.split_at(s.len()/2);
         //println!("{}, {}", first, second);
 
-        // TODO make efficent using Hashset and intersect()
-        let mut res = 'a';
-        first
-          .chars()
-          .for_each(|c| if second.contains(c) {
-            res = c;
-        });
-        res
+        let comp_1: HashSet<char> = HashSet::from_iter(first.chars());
+        let comp_2: HashSet<char> = HashSet::from_iter(second.chars());
+
+        *comp_1
+            .intersection(&comp_2)
+            .next()
+            .expect("No match: BUG")
     }
 }
 
