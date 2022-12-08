@@ -6,12 +6,19 @@ use std::error::Error;
 
 mod task {
     use std::collections::HashSet;
+    const IS_PART1: bool = true;
 
     pub fn is_subset(x: &Vec<u32>, y: &Vec<u32>) -> bool {
         let a: HashSet<&u32> = HashSet::from_iter(x.iter());
         let b: HashSet<&u32> = HashSet::from_iter(y.iter());
 
-        a.is_subset(&b) || b.is_subset(&a)
+        if IS_PART1 {
+            // Part 1 is looking for subsets
+            a.is_subset(&b) || b.is_subset(&a)
+        } else {
+            // Part 2 us looking for any common sections
+            !a.is_disjoint(&b)
+        }
     }
 
     pub fn extract_sections(pair: &str) -> (u32, u32, u32, u32) {
