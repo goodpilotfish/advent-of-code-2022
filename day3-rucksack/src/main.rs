@@ -19,7 +19,7 @@ mod task {
         let (first, second) = s.split_at(s.len()/2);
         //println!("{}, {}", first, second);
 
-        // TODO make efficent. 
+        // TODO make efficent using Hashset and intersect()
         let mut res = 'a';
         first
           .chars()
