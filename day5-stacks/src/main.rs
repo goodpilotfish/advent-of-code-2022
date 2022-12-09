@@ -21,7 +21,6 @@ mod task {
                         x.parse::<u32>().ok()
                     }).collect();
 
-                //dbg!(tmp);
                 match tmp[..] {
                     [crates, src, target] => {
                         println!("{}, {}, {}", crates, src, target);
@@ -32,25 +31,22 @@ mod task {
             }
         );
 
-        dbg!(stack);
+        let mut res = String::from("");
+        stack
+            .iter()
+            .for_each(|x| {
+                res.push(x.last().unwrap().clone());
+            });
 
-        String::from("ABC")
+        res
     }
 
     // move 1 from 2 to 1
     pub fn move_crates(input: (u32, u32, u32), stack: &mut Vec<Vec<char>>) -> Vec<Vec<char>> {
         let (nbr_crates, src, target) = input;
-        let mut tmp = Vec::<char>::new();
         for _ in 0..nbr_crates { // POP
             if let Some(top) = stack[src as usize].pop() {
-                println!("Pop: {top}");
-                tmp.push(top);
-            }
-        }
-
-        for _ in 0..nbr_crates { // PUSH
-            if let Some(top) = tmp.pop() {
-                println!("Push: {top}");
+                //println!("Pop: {top}");
                 stack[target as usize].push(top);
             }
         }
@@ -88,14 +84,16 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn operate_stacks() {
         let input = "\
 move 1 from 2 to 1
 move 3 from 1 to 3
 move 2 from 2 to 1
 move 1 from 1 to 2"; 
-        let mut stacks: Vec<Vec<char>> = Vec::new();
+        let v1 = vec!['Z', 'N'];
+        let v2 = vec!['M', 'C', 'D'];
+        let v3 = vec!['P'];
+        let mut stacks = vec![v1, v2, v3];
 
         assert_eq!(String::from("CMZ"), task::operate_stacks(&input, &mut stacks));
     }
@@ -112,7 +110,7 @@ move 1 from 1 to 2";
         let v1 = vec!['Z', 'N', 'D'];
         let v2 = vec!['M', 'C'];
         let v3 = vec!['P'];
-        let mut output = vec![v1, v2, v3];
+        let output = vec![v1, v2, v3];
         assert_eq!(output, res);
     }
 }
