@@ -58,7 +58,6 @@ mod task {
         let (nbr_crates, src, target) = input;
         for _ in 0..nbr_crates { // POP
             if let Some(top) = stack[src as usize].pop() {
-                //println!("Pop: {top}");
                 stack[target as usize].push(top);
             }
         }
@@ -70,16 +69,14 @@ mod task {
     pub fn move_crates_part2(input: (u32, u32, u32), stack: &mut Vec<Vec<char>>) -> Vec<Vec<char>> {
         let (nbr_crates, src, target) = input;
         let mut tmp: Vec<char> = Vec::new();
-        for _ in 0..nbr_crates { // POP
+        for _ in 0..nbr_crates {
             if let Some(top) = stack[src as usize].pop() {
-                //println!("Pop: {top}");
                 tmp.push(top);
             }
         }
 
         for _ in 0..nbr_crates { 
             if let Some(top) = tmp.pop() {
-                //println!("Push: {top}");
                 stack[target as usize].push(top);
             }
         }
@@ -162,5 +159,15 @@ move 1 from 1 to 2";
         let v3 = vec!['P'];
         let output = vec![v1, v2, v3];
         assert_eq!(output, res);
+    }
+
+    #[test]
+    fn top_three() {
+        let v1 = vec!['Z', 'N'];
+        let v2 = vec!['M', 'C', 'D'];
+        let v3 = vec!['P'];
+        let input = vec![v1, v2, v3];
+
+        assert_eq!("NDP", task::top_three(&input));
     }
 }
