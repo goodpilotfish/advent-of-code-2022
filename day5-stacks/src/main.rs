@@ -45,18 +45,16 @@ mod task {
     }
 
     pub fn top_three(stack: &Vec<Vec<char>>) -> String {
-        let mut res = String::from("");
         stack
             .iter()
-            .for_each(|x| {
-                res.push(x.last().unwrap().clone());
-            });
-        res
+            .map(|x| {
+                x.last().unwrap().clone()
+            }).collect()
     }
 
     pub fn move_crates(input: (u32, u32, u32), stack: &mut Vec<Vec<char>>) -> Vec<Vec<char>> {
         let (nbr_crates, src, target) = input;
-        for _ in 0..nbr_crates { // POP
+        for _ in 0..nbr_crates {
             if let Some(top) = stack[src as usize].pop() {
                 stack[target as usize].push(top);
             }
