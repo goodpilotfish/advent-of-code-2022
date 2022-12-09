@@ -65,6 +65,27 @@ mod task {
 
         stack.to_vec()
     }
+
+    #[allow(dead_code)]
+    pub fn move_crates_part2(input: (u32, u32, u32), stack: &mut Vec<Vec<char>>) -> Vec<Vec<char>> {
+        let (nbr_crates, src, target) = input;
+        let mut tmp: Vec<char> = Vec::new();
+        for _ in 0..nbr_crates { // POP
+            if let Some(top) = stack[src as usize].pop() {
+                //println!("Pop: {top}");
+                tmp.push(top);
+            }
+        }
+
+        for _ in 0..nbr_crates { 
+            if let Some(top) = tmp.pop() {
+                //println!("Push: {top}");
+                stack[target as usize].push(top);
+            }
+        }
+
+        stack.to_vec()
+    }
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
