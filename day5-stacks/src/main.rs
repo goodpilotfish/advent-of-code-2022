@@ -1,30 +1,39 @@
 // TODO - Refactor
 // Break out top_three() DONE
-// Read input stacks dynamically
-// more functional...reduce lines
+// Read input stacks dynamically DONE
+// more functional. Use collect_tuple from Itertools
 
 use std::fs;
 use std::error::Error;
 
 mod task {
-    // TODO Read input stacks dynamically
-    pub fn init_stacks(_input: &str, stack: &mut Vec<Vec<char>>) {
-        let v1 = vec!['R', 'G', 'H', 'Q', 'S', 'B', 'T', 'N'];
-        let v2 = vec!['H', 'S', 'F', 'D', 'P', 'Z', 'J'];
-        let v3 = vec!['Z', 'H', 'V'];
-        let v4 = vec!['M', 'Z', 'J', 'F', 'G', 'H'];
-        let v5 = vec!['T', 'Z', 'C', 'D', 'L', 'M', 'S', 'R'];
-        let v6 = vec!['M', 'T', 'W', 'V', 'H', 'Z', 'J'];
-        let v7 = vec!['T', 'F', 'P', 'L', 'Z'];
-        let v8 = vec!['Q', 'V', 'W', 'S'];
-        let v9 = vec!['W', 'H', 'L', 'M', 'T', 'D', 'N', 'C'];
+    pub fn init_stacks(input: &str, stack: &mut Vec<Vec<char>>) {
+        let crates = input
+            .lines()
+            .take_while(|line| !line.is_empty());
 
-        *stack = vec![v1, v2, v3, v4, v5, v6, v7, v8, v9];
+        let nbr_stacks = crates
+            .clone()
+            .last()
+            .unwrap()
+            .split_whitespace()
+            .count();
+
+        let mut stacks = vec![vec![]; nbr_stacks];
+        crates.for_each(|line| {
+            line.char_indices()
+                .filter(|(_, crate_symbol)| crate_symbol.is_alphabetic())
+                .for_each(|(i, crate_symbol)| stacks[i / 4].push(crate_symbol))
+        });
+        stacks.iter_mut().for_each(|x| x.reverse());
+
+        *stack = stacks;
     }
 
     pub fn operate_stacks(input: &str, stack: &mut Vec<Vec<char>>) -> String {
         input
             .lines()
+            .skip_while(|line| !line.contains("move"))
             .for_each(|line| {
                 let tmp: Vec<u32> = line
                     .split(" ")
@@ -32,6 +41,7 @@ mod task {
                         x.parse::<u32>().ok()
                     }).collect();
 
+                // could use collect_tuple() from Itertools
                 match tmp[..] {
                     [crates, src, target] => {
                         *stack = move_crates((crates, src-1, target-1), stack);
