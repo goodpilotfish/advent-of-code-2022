@@ -1,6 +1,7 @@
 // TODO
 
 use std::collections::HashMap;
+use std::fs;
 
 #[derive(PartialEq)]
 enum Type {
@@ -88,10 +89,10 @@ fn run(instructions: &str) -> u32 {
             last_folder = parse_instruction(instr, last_folder, &mut hashmap);
         });
 
-    // run through hashmap - TODO
+    // run through hashmap
     let mut sum = HashMap::<String, u32>::new();
     loop {
-        println!("Size: {}", hashmap.len());
+        println!("Size: {}", sum.len());
         // exit condition
         if hashmap.len() == sum.len() {
             break;
@@ -102,7 +103,6 @@ fn run(instructions: &str) -> u32 {
             sum.insert(key.to_string(), res);
         }
     };
-    dbg!(&sum);
 
     // TODO write functionall
     let mut res = 0;
@@ -115,7 +115,8 @@ fn run(instructions: &str) -> u32 {
 }
 
 fn main() {
-    println!("Hello, world!");
+    let file = fs::read_to_string("input.txt").unwrap();
+    println!("{}", run(&file));
 }
 
 #[cfg(test)]
