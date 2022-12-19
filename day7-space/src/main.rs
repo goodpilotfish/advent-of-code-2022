@@ -1,14 +1,16 @@
-// TODO
+// Support non unique folder names - TODO
 
 use std::collections::HashMap;
 use std::fs;
+use std::thread;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 enum Type {
     FILE,
     DIR
 }
 
+#[derive(Debug)]
 struct Entry {
     size: u32,
     name: String,
@@ -37,7 +39,7 @@ fn parse_instruction<'a>(instruction: &'a str, last_folder: &'a str, hash: &mut 
         Some("ls") => {
             itr
                 .for_each(|line| {
-                    println!("{}", line);
+                    //println!("{}", line);
                     let v: Vec<&str> = line.split_whitespace().collect();
                     if v[0] == "dir" {
                         hash.entry(last_folder.to_string())
@@ -64,17 +66,27 @@ fn parse_instruction<'a>(instruction: &'a str, last_folder: &'a str, hash: &mut 
 }
 
 // recursivly find file sums
-fn child_sum(key: &str, hash: &HashMap<String, Vec<Entry>>) -> u32 {
+fn child_sum(key: &str, hash: &HashMap<String, Vec<Entry>>, sum_hash: &HashMap::<String, u32>) -> u32 {
+    println!("Key: {}", key);
     let val = hash.get(key).unwrap();
     if val.iter().all(|x| !x.is_dir()) {
         return val.iter().fold(0, |acc, x| acc + x.size);
     }
 
-    let folder_entry = val.iter().find(|x| x.is_dir()).unwrap();
-    let sum = val.iter()
-        .filter(|x| !x.is_dir())
-        .fold(0, |acc, x| acc + x.size);
-    child_sum(&folder_entry.name, hash) + sum
+    let mut sum = 0;
+    for entry in val {
+        if entry.is_dir() {
+            // optimization - lookup
+            if let Some(x) = sum_hash.get(key) {
+                sum += x; 
+            } else {
+                sum += child_sum(&entry.name, hash, sum_hash);
+            }
+        } else {
+            sum += entry.size;
+        }
+    }
+    sum
 }
 
 fn run(instructions: &str) -> u32 {
@@ -99,24 +111,25 @@ fn run(instructions: &str) -> u32 {
         }
 
         for key in hashmap.keys() {
-            let res = child_sum(key, &hashmap);
+            let res = child_sum(key, &hashmap, &sum);
+            println!("Key: {}, Res: {}", key, res);
             sum.insert(key.to_string(), res);
         }
     };
 
-    // TODO write functionall
-    let mut res = 0;
-    for (_key, val) in &sum {
-        if *val <= 100000 {
-            res += val
-        }
-    }
-    res
+    sum.values()
+        .filter(|x| **x <= 100_000)
+        .fold(0, |acc, x| { acc + x})
 }
 
 fn main() {
     let file = fs::read_to_string("input.txt").unwrap();
-    println!("{}", run(&file));
+
+    let num: u64 = 100_000;
+    thread::Builder::new().stack_size(num as usize * 0xFF).spawn(
+        move || {
+            println!("{}", run(&file));
+        }).unwrap().join();
 }
 
 #[cfg(test)]
