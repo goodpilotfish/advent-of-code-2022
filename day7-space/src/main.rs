@@ -21,16 +21,23 @@ fn folder_size(reader: &mut Lines, folder_sum: &mut Vec<u32>) -> u32 {
 fn main() {
     let file = fs::read_to_string("input.txt").unwrap();
     let mut sums: Vec<u32> = vec![1, 2];//Vec::new();
-    let _ = folder_size(&mut file.lines(), &mut sums);
+    let total = folder_size(&mut file.lines(), &mut sums);
+    println!("Total Space Used: {}", total);
 
     //dbg!(&sums);
-
     let res = sums
         .iter()
         .filter(|&x| *x < 100_000)
         .fold(0, |acc, x| acc + x);
 
-    println!("Res: {}", res);
+    println!("Part 1: {}", res);
+
+    // Part 2
+    let space = 30_000_000 - (70_000_000 - total);
+    sums.sort();
+    let f = sums.iter().find(|&&x| x > space);
+    println!("Needs to be freed: {}, Folder picked - Part 2: {}", space, f.unwrap());
+
 }
 
 #[cfg(test)]
