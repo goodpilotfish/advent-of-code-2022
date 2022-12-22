@@ -15,7 +15,7 @@ fn check_tree((x, y): (usize, usize), grid: &Vec<Vec<u8>>) -> bool {
     let mut west: Vec<u8> = east.split_off(y+1);
     east.pop();
 
-    let mut flattened: Vec<u8> = grid.into_iter().flatten().cloned().collect();
+    let flattened: Vec<u8> = grid.into_iter().flatten().cloned().collect();
 
     // handle column
     let mut column = vec![];
@@ -33,6 +33,10 @@ fn check_tree((x, y): (usize, usize), grid: &Vec<Vec<u8>>) -> bool {
         || is_visible(grid[x][y], &south);
     //println!("Res: {}. ({},{}). Grid: {}", res, x, y, grid[x][y]);
     res
+}
+
+fn calculate_border(width: u32, height: u32) -> u32 {
+    width*2  + (height - 2) * 2
 }
 
 fn run(input: &str) -> u32 {
@@ -63,7 +67,7 @@ fn run(input: &str) -> u32 {
         }
     }
   
-    let offset = (width as u32)*2  + (height as u32 - 2)*2;
+    let offset = calculate_border(width as u32, height as u32);
     println!("Offset: {}. W: {}, H: {}", offset, width, height);
     sum+offset
 } 
@@ -88,9 +92,19 @@ mod tests {
     }
 
     #[test]
+    fn test_calculate_border() {
+        assert_eq!(16, calculate_border(5, 5));
+        assert_eq!(10, calculate_border(5, 2));
+        assert_eq!(10, calculate_border(2, 5));
+        assert_eq!(12, calculate_border(5, 3));
+        assert_eq!(12, calculate_border(3, 5));
+    }
+
+    #[test]
     fn test_check_tree() {
         let grid = vec![
             vec![3, 0, 3, 7, 3],
+            vec![2, 5, 5, 1, 2], 
             vec![2, 5, 5, 1, 2], 
         ];
 
