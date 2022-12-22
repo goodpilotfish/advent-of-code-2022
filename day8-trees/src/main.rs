@@ -1,6 +1,3 @@
-// TODO
-// Use dynamic grid width and height
-
 use std::fs;
 
 fn is_visible(tree: u8, compare: &[u8]) -> bool {
@@ -53,7 +50,8 @@ fn run(input: &str) -> u32 {
             //println!("{:?}", row);
             grid.push(row);
         });
-   
+  
+    // calculate
     let width = grid[0].len() - 1;
     let height = grid.len() - 1;
     let mut sum = 0;
