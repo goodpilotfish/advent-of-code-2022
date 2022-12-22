@@ -23,7 +23,7 @@ fn check_tree((x, y): (usize, usize), grid: &Vec<Vec<u8>>) -> bool {
     // handle column
     let mut column = vec![];
     for (idx, &val) in flattened.iter().enumerate() {
-        if idx % 5 == y { 
+        if idx % width == y { 
             column.push(val);
         };
     }
@@ -54,16 +54,18 @@ fn run(input: &str) -> u32 {
             grid.push(row);
         });
    
+    let width = grid[0].len() - 1;
+    let height = grid.len() - 1;
     let mut sum = 0;
-    for x in 1..=3 {
-        for y in 1..=3 {
+    for x in 1..=width-1 {
+        for y in 1..=height-1 {
             if check_tree((x, y), &grid) {
                 sum += 1;
             }
         }
     }
-    
-    sum+16
+   
+    sum+(width as u32 * height as u32)
 } 
 
 fn main() {
