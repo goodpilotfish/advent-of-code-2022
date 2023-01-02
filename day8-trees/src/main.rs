@@ -12,7 +12,7 @@ fn check_tree((x, y): (usize, usize), grid: &Vec<Vec<u8>>) -> bool {
 
     // handle row
     let mut east: Vec<u8> = grid[x].clone();
-    let mut west: Vec<u8> = east.split_off(y+1);
+    let west: Vec<u8> = east.split_off(y+1);
     east.pop();
 
     let flattened: Vec<u8> = grid.into_iter().flatten().cloned().collect();
@@ -61,7 +61,7 @@ fn run(input: &str) -> u32 {
     let mut sum = 0;
     for x in 1..=width-2 {
         for y in 1..=height-2 {
-            if check_tree((x, y), &grid) {
+            if check_tree((y, x), &grid) {
                 sum += 1;
             }
         }
