@@ -1,12 +1,35 @@
 use std::fs;
 
+fn nbr_visible_trees(tree: u8, compare: &[u8]) -> usize {
+    let res = compare
+        .iter()
+        .take_while(|x| **x < tree)
+        .collect::<Vec<_>>()
+        .len();
+
+    if res == compare.len() {
+        res
+    } else {
+        res + 1
+    }
+}
+
 fn is_visible(tree: u8, compare: &[u8]) -> bool {
     !compare
         .iter()
         .any(|&x| x >= tree)
 }
 
-fn check_tree((x, y, width, height): (usize, usize, usize, usize), grid: &Vec<Vec<u8>>) -> bool {
+fn part1(tree: u8, east: &[u8], west: &[u8], north: &[u8], south: &[u8]) -> u32 {
+    let res = is_visible(tree, &east) 
+        || is_visible(tree, &west)
+        || is_visible(tree, &north)
+        || is_visible(tree, &south);
+    //println!("Res: {}. ({},{}). Grid: {}", res, x, y, grid[y][x]);
+    res as u32
+}
+
+fn check_tree((x, y, width, height): (usize, usize, usize, usize), grid: &Vec<Vec<u8>>) -> u32 {
     // handle row
     let mut east: Vec<u8> = grid[y].clone();
     let west: Vec<u8> = east.split_off(x+1);
@@ -23,12 +46,7 @@ fn check_tree((x, y, width, height): (usize, usize, usize, usize), grid: &Vec<Ve
     let north = &column[0..y];
     let south = &column[y+1..height];
 
-    let res = is_visible(grid[y][x], &east) 
-        || is_visible(grid[y][x], &west)
-        || is_visible(grid[y][x], &north)
-        || is_visible(grid[y][x], &south);
-    //println!("Res: {}. ({},{}). Grid: {}", res, x, y, grid[y][x]);
-    res
+    part1(grid[y][x], &east, &west, &north, &south)
 }
 
 fn calculate_border(width: u32, height: u32) -> u32 {
@@ -57,7 +75,7 @@ fn run(input: &str) -> u32 {
     let mut sum = 0;
     for x in 1..=width-2 {
         for y in 1..=height-2 {
-            if check_tree((y, x, width, height), &grid) {
+            if check_tree((y, x, width, height), &grid) > 0 {
                 sum += 1;
             }
         }
@@ -76,6 +94,20 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_visble_trees() {
+        let tree: u8 = 5;
+        let vec_one = vec![5, 1, 2];
+        let vec1_three = vec![3, 3, 2];
+        
+        assert_eq!(1, nbr_visible_trees(tree, &vec_one));
+        assert_eq!(3, nbr_visible_trees(tree, &vec1_three));
+    }
+
+    fn test_scenic_score() {
+
+    }
 
     #[test]
     fn test_is_visible() {
@@ -104,7 +136,7 @@ mod tests {
             vec![2, 5, 5, 1, 2], 
         ];
 
-        assert_eq!(true, check_tree((1, 1, 5, 3), &grid));
+        assert_eq!(1, check_tree((1, 1, 5, 3), &grid));
     }
 
     #[test]
