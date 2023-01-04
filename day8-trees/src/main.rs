@@ -6,32 +6,28 @@ fn is_visible(tree: u8, compare: &[u8]) -> bool {
         .any(|&x| x >= tree)
 }
 
-fn check_tree((x, y): (usize, usize), grid: &Vec<Vec<u8>>) -> bool {
-    let height = grid.len();
-    let width = grid[x].len();
-
+fn check_tree((x, y, width, height): (usize, usize, usize, usize), grid: &Vec<Vec<u8>>) -> bool {
     // handle row
-    let mut east: Vec<u8> = grid[x].clone();
-    let west: Vec<u8> = east.split_off(y+1);
+    let mut east: Vec<u8> = grid[y].clone();
+    let west: Vec<u8> = east.split_off(x+1);
     east.pop();
 
-    let flattened: Vec<u8> = grid.into_iter().flatten().cloned().collect();
-
     // handle column
+    let flattened: Vec<u8> = grid.into_iter().flatten().cloned().collect();
     let mut column = vec![];
     for (idx, &val) in flattened.iter().enumerate() {
-        if idx % width == y { 
+        if idx % width == x { 
             column.push(val);
         };
     }
-    let north = &column[0..x];
-    let south = &column[x..height-1];
+    let north = &column[0..y];
+    let south = &column[y+1..height];
 
-    let res = is_visible(grid[x][y], &east) 
-        || is_visible(grid[x][y], &west)
-        || is_visible(grid[x][y], &north)
-        || is_visible(grid[x][y], &south);
-    //println!("Res: {}. ({},{}). Grid: {}", res, x, y, grid[x][y]);
+    let res = is_visible(grid[y][x], &east) 
+        || is_visible(grid[y][x], &west)
+        || is_visible(grid[y][x], &north)
+        || is_visible(grid[y][x], &south);
+    //println!("Res: {}. ({},{}). Grid: {}", res, x, y, grid[y][x]);
     res
 }
 
@@ -40,7 +36,7 @@ fn calculate_border(width: u32, height: u32) -> u32 {
 }
 
 fn run(input: &str) -> u32 {
-    // build
+    // build grid
     let mut grid = Vec::new();
     input
         .lines()
@@ -51,17 +47,17 @@ fn run(input: &str) -> u32 {
                     c.to_digit(10).unwrap() as u8
                 })
                 .collect::<Vec<_>>();
-            //println!("{:?}", row);
             grid.push(row);
         });
   
     // calculate
     let width = grid[0].len();
     let height = grid.len();
+    //dbg!(&grid);
     let mut sum = 0;
     for x in 1..=width-2 {
         for y in 1..=height-2 {
-            if check_tree((y, x), &grid) {
+            if check_tree((y, x, width, height), &grid) {
                 sum += 1;
             }
         }
@@ -108,7 +104,7 @@ mod tests {
             vec![2, 5, 5, 1, 2], 
         ];
 
-        assert_eq!(true, check_tree((1, 1), &grid));
+        assert_eq!(true, check_tree((1, 1, 5, 3), &grid));
     }
 
     #[test]
